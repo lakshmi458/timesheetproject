@@ -64,7 +64,7 @@ else{
   
 
   
-/*Login Node Details*/
+/*Login Node Details
 app.post("/login", (req, res) => {
 
   const username=req.body.username;
@@ -112,7 +112,7 @@ if(result[1][0].uid===username&&result[1][0].pass===password){
   
   });
 
-
+*/
 /*Register Node Id generation*/
 app.get("/register", (req, res) => {
   db.query("SELECT count(*) as length FROM heroku_0a6414aa002a7cc.user",function(err,result){
