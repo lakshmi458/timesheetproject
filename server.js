@@ -15,7 +15,55 @@ throw err;
 console.log("MySql Connected");
 });
 
+/*Forget Node */
+console.log("BEFORE FORGET")
+app.post("/forget", (req, res) => {
+  console.log("AFTER FORGET")
+  const username=req.body.username;
+  const password=req.body.password;
+  const cpassword=req.body.cpassword;
+  console.log("username",username,"pass",password,"cpass",cpassword)
+   let userarr=[];
+  db.query( "SELECT count(*) as length FROM user", function (err, result) {
+    if (err) throw err;
+    count=result[0].length
+	 var sql="SELECT * FROM user;SELECT * FROM admin"
+  db.query(sql,function (err, result) {
+    if (err) throw err;
+    for(var i=0;i<count;i++)
+    {
+userarr.push(result[0][i].uid);
+    }
+	for(var i=0;i<1;i++)
+	{
+	userarr.push(result[1][0].uid)
+	}
+  console.log("userarr",userarr)
+  if(userarr.includes(username))
+  {
+  if(password===cpassword){
+      db.query("UPDATE heroku_0a6414aa002a7cc.admin SET pass= ? WHERE uid =?",
+  [password,username],
+  ( err,result)=>{
+      if(result.affectedRows!=0){
+      
+          res.send({message:"updated password successfully..! please login"});
+      }
+     })
+}
+ else{
+   res.send({message:"password and confirm password not mismatched"});  
+  }
+}
+else{
+ res.send({message:"invalid username"}); 
+}
+  });
+  })
+})
+  
 
+  
 /*Login Node Details*/
 app.post("/login", (req, res) => {
 
@@ -63,57 +111,11 @@ if(result[1][0].uid===username&&result[1][0].pass===password){
   });
   
   });
-/*Forget Node */
-app.post("/forget", (req, res) => {
 
-  const username=req.body.username;
-  const password=req.body.password;
-  const cpassword=req.body.cpassword;
-   let userarr=[];
-  db.query( "SELECT count(*) as length FROM user", function (err, result) {
-    if (err) throw err;
-    count=result[0].length
-	 var sql="SELECT * FROM user;SELECT * FROM admin"
-  db.query(sql,function (err, result) {
-    if (err) throw err;
-    for(var i=0;i<count;i++)
-    {
-userarr.push(result[0][i].uid);
-    }
-	for(var i=0;i<1;i++)
-	{
-	userarr.push(result[1][0].uid)
-	}
-  console.log("userarr",userarr)
-  if(userarr.includes(username))
-  {
-  if(password===cpassword){
-      db.query("UPDATE employee.user SET pass= ? WHERE uid =?",
-  [password,username],
-  ( err,result)=>{
-      if(result.affectedRows!=0){
-      
-          res.send({message:"updated password successfully..! please login"});
-      }
-     })
-}
- else{
-   res.send({message:"password and confirm password not mismatched"});  
-  }
-}
-else{
- res.send({message:"invalid username"}); 
-}
-  });
-  })
-})
-  
-
-  
 
 /*Register Node Id generation*/
 app.get("/register", (req, res) => {
-  db.query("SELECT count(*) as length FROM user",function(err,result){
+  db.query("SELECT count(*) as length FROM heroku_0a6414aa002a7cc.user",function(err,result){
    if(result){ id ="CH"+(result[0].length+1);
 
      res.send({id});
