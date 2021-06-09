@@ -14,8 +14,55 @@ throw err;
 }
 console.log("MySql Connected");
 });
+/*Login Node Details*/
+app.post("/login", (req, res) => {
 
-/*Forget Node */
+  const username=req.body.username;
+  const password=req.body.password;
+console.log(username,"username",password,"pass");
+
+  var sql="SELECT * FROM user WHERE uid =? AND pass =?;SELECT * FROM admin WHERE uid=? AND pass=?"
+  db.query(sql,
+  [username,password,username,password],
+  
+  ( err,result)=>{
+  if(result[0].length>0)
+  {
+ 
+    if(result[0][0].uid===username&&result[0][0].pass===password){
+   
+  res.send(result[0])
+    }
+    else{
+      res.send({message:"Invalid username"});
+      console.log("invalid password")
+    }
+  
+  
+}
+
+else if(result[1].length>0){
+if(result[1][0].uid===username&&result[1][0].pass===password){
+ 
+    res.send(result[1])
+    
+    
+  }
+  else{
+    res.send({message:"Invalid username"});
+    console.log("invalid password")
+  }
+}
+  else{
+   
+  res.send({message:"Invalid userid/password"});
+  }
+  
+  });
+  
+  });
+
+/*Forget Node 
 console.log("BEFORE FORGET")
 app.post("/forget", (req, res) => {
   console.log("AFTER FORGET")
@@ -63,7 +110,7 @@ else{
 })
   
 
-  
+ */ 
 
 
       
