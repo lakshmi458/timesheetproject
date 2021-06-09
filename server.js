@@ -17,7 +17,7 @@ console.log("MySql Connected");
 
 /*Forget Node */
 console.log("BEFORE FORGET")
-app.post("/forget", (req, res) => {
+app.post("https://backendserver01.herokuapp.com/forget", (req, res) => {
   console.log("AFTER FORGET")
   const username=req.body.username;
   const password=req.body.password;
