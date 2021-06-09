@@ -4,7 +4,7 @@ const cors =require("cors");
 const app = express();
 app.use(express.json());
 app.use(cors());
-
+const PORT=process.env.PORT || 3001;
 const db = require('./config/db')
 
 db.connect((err) => {
@@ -609,7 +609,7 @@ app.get("/projectreports",(req,res)=>{
       })
 
       
-app.listen("3001", () => {
+app.listen(PORT, () => {
 
     console.log("Server started on port 3000");
     
