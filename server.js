@@ -62,7 +62,7 @@ if(result[1][0].uid===username&&result[1][0].pass===password){
   
   });
 
-/*Forget Node 
+/*Forget Node */ 
 console.log("BEFORE FORGET")
 app.post("/forget", (req, res) => {
   console.log("AFTER FORGET")
@@ -110,7 +110,7 @@ else{
 })
   
 
- */ 
+ 
 
 
       
