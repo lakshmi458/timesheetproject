@@ -269,7 +269,7 @@ app.post("/updateprofile", (req, res) => {
           ProjectValue.push(new Array(id,taskList[i].Client.toUpperCase(),taskList[i].Project.toUpperCase(),taskList[i].NoOfHours,taskList[i].PStartDate,taskList[i].PEndDate,taskList[i].Resources))
       }}
       //console.log("ProjectValues:",ProjectValue);
-      var sql="insert into Project(UserId,Client,Project,NoOfHours,PStartDate,PEndDate,Resources) VALUES?";
+      var sql="insert into heroku_0a6414aa002a7cc.project(UserId,Client,Project,NoOfHours,PStartDate,PEndDate,Resources) VALUES?";
     
    if(k>0)
    {
