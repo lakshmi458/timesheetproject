@@ -42,7 +42,7 @@ userarr.push(result[0][i].uid);
   if(userarr.includes(username))
   {
   if(password===cpassword){
-      db.query("UPDATE heroku_0a6414aa002a7cc.admin SET pass= ? WHERE uid =?",
+      db.query("UPDATE heroku_0a6414aa002a7cc.user SET pass= ? WHERE uid =?",
   [password,username],
   ( err,result)=>{
       if(result.affectedRows!=0){
@@ -230,7 +230,7 @@ app.post("/updateprofile", (req, res) => {
      app.post("/CreateProject", (req, res) => {
       var Projectarr=[];
       var ProjectCount='';
-	   db.query( "SELECT count(*) as length FROM project", function (err, result) {
+	   db.query( "SELECT count(*) as length FROM heroku_0a6414aa002a7cc.project", function (err, result) {
      if (err) throw err;
      ProjectCount=result[0].length
      //console.log(ProjectCount);
