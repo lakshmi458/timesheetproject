@@ -7,7 +7,7 @@ app.use(cors());
 
 const db = require('./config/db')
 
-db.connect((err) => {
+db.getConnection(function(err, connection){
 
 if (err) {
 throw err;
