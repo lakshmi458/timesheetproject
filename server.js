@@ -16,14 +16,14 @@ console.log("MySql Connected");
 });
 
 /*Forget Node */
-console.log("BEFORE FORGET")
+
 app.post("/forget", (req, res) => {
-  console.log("AFTER FORGET")
+
   const username=req.body.username;
   const password=req.body.password;
   const cpassword=req.body.cpassword;
-  console.log("username",username,"pass",password,"cpass",cpassword)
    let userarr=[];
+   let userarr1=[];
   db.query( "SELECT count(*) as length FROM user", function (err, result) {
     if (err) throw err;
     count=result[0].length
@@ -33,16 +33,19 @@ app.post("/forget", (req, res) => {
     for(var i=0;i<count;i++)
     {
 userarr.push(result[0][i].uid);
+userarr1.push(result[0][i].uid.toLowerCase())
     }
 	for(var i=0;i<1;i++)
 	{
 	userarr.push(result[1][0].uid)
+  userarr1.push(result[1][0].uid.toLowerCase())
 	}
   console.log("userarr",userarr)
-  if(userarr.includes(username))
+  console.log("userarr1",userarr1)
+  if(userarr.includes(username)||userarr1.includes(username))
   {
   if(password===cpassword){
-      db.query("UPDATE heroku_0a6414aa002a7cc.user SET pass= ? WHERE uid =?",
+      db.query("UPDATE employee.user SET pass= ? WHERE uid =?",
   [password,username],
   ( err,result)=>{
       if(result.affectedRows!=0){
@@ -52,7 +55,7 @@ userarr.push(result[0][i].uid);
      })
 }
  else{
-   res.send({message:"password and confirm password not mismatched"});  
+   res.send({message:"password and confirm password not matched"});  
   }
 }
 else{
@@ -61,7 +64,6 @@ else{
   });
   })
 })
-  
 
   
 /*Login Node Details*/
@@ -78,31 +80,14 @@ console.log(username,"username",password,"pass");
   ( err,result)=>{
   if(result[0].length>0)
   {
- 
-    if(result[0][0].uid===username&&result[0][0].pass===password){
-   
   res.send(result[0])
-    }
-    else{
-      res.send({message:"Invalid username"});
-      console.log("invalid password")
-    }
-  
-  
+   
 }
 
 else if(result[1].length>0){
-if(result[1][0].uid===username&&result[1][0].pass===password){
- 
-    res.send(result[1])
-    
-    
-  }
-  else{
-    res.send({message:"Invalid username"});
-    console.log("invalid password")
-  }
-}
+
+res.send(result[1])
+    }
   else{
    
   res.send({message:"Invalid userid/password"});
@@ -115,10 +100,11 @@ if(result[1][0].uid===username&&result[1][0].pass===password){
 
 /*Register Node Id generation*/
 app.get("/register", (req, res) => {
-  db.query("SELECT count(*) as length FROM heroku_0a6414aa002a7cc.user",function(err,result){
-   if(result){ id ="CH"+(result[0].length+1);
-
-     res.send({id});
+  db.query("SELECT MAX(uid) as length FROM user",function(err,result){
+   if(result){ 
+     let len=parseInt(result[0].length.slice(2))+1;
+  id ="CH"+(len);
+  res.send({id});
  
   }
    else{ console.log(err);
@@ -299,7 +285,7 @@ app.post("/updateprofile", (req, res) => {
         (err,result)=>{
       
           if(result){
-            res.send({message:"Already Project Exited"});
+            res.send({message:"Already Project Existed"});
                 }
                 // else{
                 //     res.send({message:"Already Project Exited"});
@@ -377,7 +363,7 @@ if(taskList.length>0)
       //console.log("Data Successfully Updated")
           }
           else{
-              res.send({message:"Already Project Exited"});
+              res.send({message:"Already Project Existed"});
           }
 }
 );
@@ -394,7 +380,7 @@ if(taskList.length>0)
       //  console.log("Data Successfully Deleted")
             }
             else{
-                res.send({message:"Already Project Exited"});
+                res.send({message:"Already Project Existed"});
             }
   }
   );
