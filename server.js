@@ -102,6 +102,7 @@ res.send(result[1])
 app.get("/register", (req, res) => {
   db.query("SELECT MAX(uid) as length FROM user",function(err,result){
    if(result){ 
+     console.log(result[0].length,"length")
      let len=parseInt(result[0].length.slice(2))+1;
   id ="CH"+(len);
   res.send({id});
