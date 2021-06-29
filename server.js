@@ -100,19 +100,33 @@ res.send(result[1])
 
 /*Register Node Id generation*/
 app.get("/register", (req, res) => {
-  db.query("SELECT MAX(uid) as length FROM user",function(err,result){
-   if(result){ 
-     console.log(result[0].length,"length")
-     let len=parseInt(result[0].length.slice(2))+1;
-  id ="CH"+(len);
-  res.send({id});
+  let userarr=[];
+  db.query( "SELECT count(*) as length FROM user", function (err, result) {
+    if (err) throw err;
+    count=result[0].length
+	 var sql="SELECT * FROM user"
+  db.query(sql,function (err, result) {
+    if (err) throw err;
+    for(var i=0;i<count;i++)
+    {
+userarr.push(result[i].uid.slice(2));
+
+    }
+    console.log("user",userarr)
+ let   len= Math.max(...userarr)
+ console.log("len",parseInt(len)+1)
  
-  }
-   else{ console.log(err);
-      }
-      
-   })
+    len=parseInt(len)+1
+  
+     id ="CH"+(len);
+
+     res.send({id});
+ 
+ 
 })
+})
+})
+
 
 /*Register new employee details*/
 app.post("/register", (req, res) => {
