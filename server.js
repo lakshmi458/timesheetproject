@@ -485,6 +485,7 @@ taskList[i].Saturday=0;
        else{
          console.log("inserted")
         DeleteArr[i]=id+"^"+myDate+"^"+taskList[i].Client+"^"+taskList[i].Project;
+        console.log(id,myDate,taskList[i].Client,taskList[i].Project)
         db.query("insert into edittimesheet(UserId,Date,Client,Project,Sunday,Cmt1,Monday,Cmt2,Tuesday,Cmt3,Wednesday,Cmt4,Thursday,Cmt5,Friday,Cmt6,Saturday,Cmt7,Submit) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
         [id,myDate,taskList[i].Client,taskList[i].Project,taskList[i].Sunday,taskList[i].Cmt1,taskList[i].Monday,taskList[i].Cmt2,taskList[i].Tuesday,taskList[i].Cmt3,taskList[i].Wednesday,taskList[i].Cmt4,taskList[i].Thursday,taskList[i].Cmt5,taskList[i].Friday,taskList[i].Cmt6,taskList[i].Saturday,taskList[i].Cmt7,submit])
        }
