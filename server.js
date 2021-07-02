@@ -4,10 +4,11 @@ const cors =require("cors");
 const app = express();
 app.use(express.json());
 app.use(cors());
+//const db = require('./config/db')
 
 const db = require('./config/db')
 
-db.getConnection(function(err, connection){
+db.getConnection((err) => {
 
 if (err) {
 throw err;
@@ -15,8 +16,45 @@ throw err;
 console.log("MySql Connected");
 });
 
-/*Forget Node */
 
+
+/*Login Node Details*/
+app.post("/login", (req, res) => {
+
+    const username=req.body.username;
+    const password=req.body.password;
+console.log(username,"username",password,"pass");
+
+    var sql="SELECT * FROM user WHERE uid =? AND pass =?;SELECT * FROM admin WHERE uid=? AND pass=?"
+    db.query(sql,
+    [username,password,username,password],
+    
+    ( err,result)=>{
+    if(result[0].length>0)
+    {
+   
+     
+     
+    res.send(result[0])
+    
+    
+    
+    
+  }
+
+  else if(result[1].length>0){
+    res.send(result[1])
+ 
+  }
+    else{
+     
+    res.send({message:"Invalid userid/password"});
+    }
+    
+    });
+    
+    });
+/*Forget Node */
 app.post("/forget", (req, res) => {
 
   const username=req.body.username;
@@ -64,39 +102,7 @@ else{
   });
   })
 })
-
   
-/*Login Node Details*/
-app.post("/login", (req, res) => {
-
-  const username=req.body.username;
-  const password=req.body.password;
-console.log(username,"username",password,"pass");
-
-  var sql="SELECT * FROM user WHERE uid =? AND pass =?;SELECT * FROM admin WHERE uid=? AND pass=?"
-  db.query(sql,
-  [username,password,username,password],
-  
-  ( err,result)=>{
-  if(result[0].length>0)
-  {
-  res.send(result[0])
-   
-}
-
-else if(result[1].length>0){
-
-res.send(result[1])
-    }
-  else{
-   
-  res.send({message:"Invalid userid/password"});
-  }
-  
-  });
-  
-  });
-
 
 /*Register Node Id generation*/
 app.get("/register", (req, res) => {
@@ -106,22 +112,33 @@ app.get("/register", (req, res) => {
     count=result[0].length
 	 var sql="SELECT * FROM user"
   db.query(sql,function (err, result) {
-    if (err) throw err;
-    for(var i=0;i<count;i++)
+    if(result.length>0)
     {
-userarr.push(result[i].uid.slice(2));
-
-    }
-    console.log("user",userarr)
- let   len= Math.max(...userarr)
- console.log("len",parseInt(len)+1)
- 
-    len=parseInt(len)+1
+      for(var i=0;i<count;i++)
+      {
+  userarr.push(result[i].uid.slice(2));
   
-     id ="CH"+(len);
-
-     res.send({id});
- 
+      }
+      let id=""
+      console.log("user",userarr)
+     
+     let len= Math.max(...userarr)
+   console.log("len",len)
+   
+    
+  
+      len=parseInt(len)+1
+      id ="CH"+len;
+   
+       res.send({id});
+    }
+    else
+    {
+      id ="CH"+1;
+      res.send({id});
+    
+   
+}
  
 })
 })
@@ -231,7 +248,7 @@ app.post("/updateprofile", (req, res) => {
      app.post("/CreateProject", (req, res) => {
       var Projectarr=[];
       var ProjectCount='';
-	   db.query( "SELECT count(*) as length FROM heroku_0a6414aa002a7cc.project", function (err, result) {
+	   db.query( "SELECT count(*) as length FROM project", function (err, result) {
      if (err) throw err;
      ProjectCount=result[0].length
      //console.log(ProjectCount);
@@ -270,7 +287,7 @@ app.post("/updateprofile", (req, res) => {
           ProjectValue.push(new Array(id,taskList[i].Client.toUpperCase(),taskList[i].Project.toUpperCase(),taskList[i].NoOfHours,taskList[i].PStartDate,taskList[i].PEndDate,taskList[i].Resources))
       }}
       //console.log("ProjectValues:",ProjectValue);
-      var sql="insert into heroku_0a6414aa002a7cc.project(UserId,Client,Project,NoOfHours,PStartDate,PEndDate,Resources) VALUES?";
+      var sql="insert into Project(UserId,Client,Project,NoOfHours,PStartDate,PEndDate,Resources) VALUES?";
     
    if(k>0)
    {
@@ -300,7 +317,7 @@ app.post("/updateprofile", (req, res) => {
         (err,result)=>{
       
           if(result){
-            res.send({message:"Already Project Existed"});
+            res.send({message:"Already Project Exited"});
                 }
                 // else{
                 //     res.send({message:"Already Project Exited"});
@@ -378,7 +395,7 @@ if(taskList.length>0)
       //console.log("Data Successfully Updated")
           }
           else{
-              res.send({message:"Already Project Existed"});
+              res.send({message:"Already Project Exited"});
           }
 }
 );
@@ -395,7 +412,7 @@ if(taskList.length>0)
       //  console.log("Data Successfully Deleted")
             }
             else{
-                res.send({message:"Already Project Existed"});
+                res.send({message:"Already Project Exited"});
             }
   }
   );
@@ -426,7 +443,7 @@ db.query( "SELECT count(*) as length FROM edittimesheet", function (err, result)
   
       
       const taskList=req.body.taskList;
-      //console.log(taskList)
+      console.log(taskList,"taskList")
       const myDate=req.body.myDate;
       const id=req.body.id;
       const submit=req.body.Submit
@@ -474,35 +491,40 @@ taskList[i].Saturday=0;
        {
          DublicateEntry.push(id+"^"+myDate+"^"+taskList[i].Client+"^"+taskList[i].Project)
         
-       if(TimeSheetarr.includes(id+"^"+myDate+"^"+taskList[i].Client+"^"+taskList[i].Project))
+       if(!TimeSheetarr.includes(id+"^"+myDate+"^"+taskList[i].Client+"^"+taskList[i].Project))
        {
-     console.log("update ts")
-         DeleteArr[i]=taskList[i].UserId+"^"+taskList[i].Date+"^"+taskList[i].Client+"^"+taskList[i].Project;
+         console.log("inserted")
+     
+        DeleteArr[i]=id+"^"+myDate+"^"+taskList[i].Client+"^"+taskList[i].Project;
+        db.query("insert into edittimesheet(UserId,Date,Client,Project,Sunday,Cmt1,Monday,Cmt2,Tuesday,Cmt3,Wednesday,Cmt4,Thursday,Cmt5,Friday,Cmt6,Saturday,Cmt7,Submit) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+        [id,myDate,taskList[i].Client,taskList[i].Project,taskList[i].Sunday,taskList[i].Cmt1,taskList[i].Monday,taskList[i].Cmt2,taskList[i].Tuesday,taskList[i].Cmt3,taskList[i].Wednesday,taskList[i].Cmt4,taskList[i].Thursday,taskList[i].Cmt5,taskList[i].Friday,taskList[i].Cmt6,taskList[i].Saturday,taskList[i].Cmt7,submit]);
+       }
+       else{
+        
+       
+        
+        DeleteArr[i]=taskList[i].UserId+"^"+taskList[i].Date+"^"+taskList[i].Client+"^"+taskList[i].Project;
       
         db.query("UPDATE edittimesheet SET UserId=?,Date=?,Client=?,Project=?,Sunday=?,Cmt1=?,Monday=?,Cmt2=?,Tuesday=?,Cmt3=?,Wednesday=?,Cmt4=?,Thursday=?,Cmt5=?,Friday=?,Cmt6=?,Saturday=?,Cmt7=?,Submit=? WHERE UserId=? AND Date=? AND Client=? AND Project=?",
       [id,myDate,taskList[i].Client,taskList[i].Project,taskList[i].Sunday,taskList[i].Cmt1,taskList[i].Monday,taskList[i].Cmt2,taskList[i].Tuesday,taskList[i].Cmt3,taskList[i].Wednesday,taskList[i].Cmt4,taskList[i].Thursday,taskList[i].Cmt5,taskList[i].Friday,taskList[i].Cmt6,taskList[i].Saturday,taskList[i].Cmt7,submit,id,myDate,taskList[i].Client,taskList[i].Project]);
-       }
-       else{
-         console.log(id,"testid")
-         console.log("testinserted")
-        DeleteArr[i]=id+"^"+myDate+"^"+taskList[i].Client+"^"+taskList[i].Project;
-        console.log(id,myDate,taskList[i].Client,taskList[i].Project)
-        db.query("insert into edittimesheet(UserId,Date,Client,Project,Sunday,Cmt1,Monday,Cmt2,Tuesday,Cmt3,Wednesday,Cmt4,Thursday,Cmt5,Friday,Cmt6,Saturday,Cmt7,Submit) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
-        [id,myDate,taskList[i].Client,taskList[i].Project,taskList[i].Sunday,taskList[i].Cmt1,taskList[i].Monday,taskList[i].Cmt2,taskList[i].Tuesday,taskList[i].Cmt3,taskList[i].Wednesday,taskList[i].Cmt4,taskList[i].Thursday,taskList[i].Cmt5,taskList[i].Friday,taskList[i].Cmt6,taskList[i].Saturday,taskList[i].Cmt7,submit])
-       }
+    
+     
       }
     }
-    console.log(DublicateEntry,"Dublicate")
-      //console.log(DeleteArr,"delete")
+    }
+  
+    
       db.query("select * from edittimesheet",function(err,result)
       {
         for(var i=0;i<TimeSheetCount;i++)
         {
           let key=result[i].UserId+"^"+result[i].Date+"^"+result[i].Client+"^"+result[i].Project;
-          if(id.includes(result[i].UserId)&&myDate.includes(result[i].Date))
+        
+          if(id===result[i].UserId&&myDate.includes(result[i].Date))
 			{
         if(!DeleteArr.includes(key))
         {
+        
           db.query("DELETE FROM edittimesheet WHERE UserId=? AND Date=? AND Client=? AND Project=?",[id,myDate,result[i].Client,result[i].Project])
         }
       }
@@ -544,13 +566,15 @@ taskList[i].Saturday=0;
   app.get("/TimeSheetSelect", (req, res) => {
     let id=req.query.a;
     let WeekDate=req.query.myDate
-  //console.log(WeekDate);
+  console.log(id);
+  console.log(WeekDate);
   
  
   db.query("select * from edittimesheet WHERE UserId=? AND Date=?",[id,WeekDate], function (err, result) {
     if(result.length>0){
+      console.log("Hello")
       res.send(result);
-      //console.log("Hello")
+     
           }
           else{
               res.send({message:"Already Project Exited"});
@@ -559,6 +583,116 @@ taskList[i].Saturday=0;
   
   });
 });
+app.post("/createtimesheet", (req, res) => {
+  var TimeSheetarr=[];
+  let k=0;
+  let l=0;
+  let j=0;
+ var TimeSheetCount='';
+ db.query( "SELECT count(*) as length FROM edittimesheet", function (err, result) {
+      if (err) throw err;
+      TimeSheetCount=result[0].length
+     
+     db.query("select * from edittimesheet", function (err, result) {
+       if (err) throw err;
+       for(var i=0;i<TimeSheetCount;i++)
+       {
+       TimeSheetarr[i]=result[i].UserId+"^"+result[i].Date+"^"+result[i].Client+"^"+result[i].Project;
+       
+     
+    
+       }
+   
+       
+       const taskList=req.body.taskList;
+       console.log(taskList,"taskList")
+       const myDate=req.body.myDate;
+       const id=req.body.id;
+       const submit=req.body.Submit
+       let DeleteArr=[];
+       let DublicateEntry=[];
+      let CreateEntry=[];
+       const len = taskList.length;
+     
+     
+      for(var i=0;i<len;i++)
+       {
+       
+        if(!DublicateEntry.includes(id+"^"+myDate+"^"+taskList[i].Client+"^"+taskList[i].Project))
+        {
+          DublicateEntry.push(id+"^"+myDate+"^"+taskList[i].Client+"^"+taskList[i].Project)
+         
+        if(TimeSheetarr.includes(id+"^"+myDate+"^"+taskList[i].Client+"^"+taskList[i].Project))
+        {
+      l=1;
+        
+       
+       
+        }
+        else{
+         
+         
+     CreateEntry.push(new Array(id,myDate,taskList[i].Client,taskList[i].Project,taskList[i].Sunday,taskList[i].Cmt1,taskList[i].Monday,taskList[i].Cmt2,taskList[i].Tuesday,taskList[i].Cmt3,taskList[i].Wednesday,taskList[i].Cmt4,taskList[i].Thursday,taskList[i].Cmt5,taskList[i].Friday,taskList[i].Cmt6,taskList[i].Saturday,taskList[i].Cmt7,submit));
+     k++;
+        
+         
+            
+     
+     
+       }
+     }
+     }
+      var sql="insert into edittimesheet(UserId,Date,Client,Project,Sunday,Cmt1,Monday,Cmt2,Tuesday,Cmt3,Wednesday,Cmt4,Thursday,Cmt5,Friday,Cmt6,Saturday,Cmt7,Submit) VALUES?";
+ console.log(k,l)
+ 
+      if(k>0)
+   {
+     db.query(sql,[CreateEntry],
+      (err,result)=>{
+       console.log("hello")
+         if(result){
+          // res.send({message:"Data Inserted Successfully"});
+        
+               
+               if(l===1)
+   {
+     j=1;
+     console.log("updated",j)
+    res.send({message:"Already Project Exited"});
+    }
+    else{
+      console.log("inserted")
+      res.send({message:"Data Inserted Successfully"});
+    }
+   }
+  }
+   );
+       
+       }
+
+    else if(j===0&&l===1)
+       {
+        console.log("l",l,"j",j)
+        db.query("select * from edittimesheet", function (err, result) {
+          if(result){
+            console.log("updates")
+            res.send({message:"Already Project Exited"});
+                }
+             
+        
+        });
+       }
+       
+   
+   
+      
+    
+       
+       
+  
+       });
+       });
+   });
 
 /*TimeSheet Client And Project*/
 app.get("/ClientSelect", (req, res) => {
@@ -612,7 +746,44 @@ app.get("/projectreports",(req,res)=>{
       })
       
       })
+//WeeklyReports
+app.get("/weeklyreports",(req,res)=>{
+  const WDate=req.query.WDate;//request date
+  //console.log("wdate:"+WDate)
+  const ID=req.query.ID;//consultant login id
+  const Role=req.query.Role;
+  const UserIds=req.query.UserIds;//hr or manager login (ids dropdown)
+ const Uid = UserIds.split("-")
+console.log("UserIds:",UserIds)
+var sql="SELECT edittimesheet.*,user.fname FROM edittimesheet  JOIN user ON edittimesheet.UserId = user.uid  Where edittimesheet.UserId=? and edittimesheet.Date=?"
+if(Role=="Manager" || Role=="HR"){
+  if(UserIds=="All"){
+  var sql= "SELECT edittimesheet.*,user.fname FROM edittimesheet  JOIN user ON edittimesheet.UserId = user.uid  Where edittimesheet.Date=?"
+   var values= [WDate]
+   console.log("all:"+values)
+      } 
+ else{
+  var values=[Uid[0],WDate]
+  //console.log("all one:"+values)
+      }
+    } 
+else{
+var values=[ID,WDate]
+//console.log("one:"+values)
 
+}
+db.query(sql,values,( err,result)=>{  
+  if(result.length>0){
+ 
+     res.send(result);
+   //console.log("weekly reports :"+JSON.stringify( result))
+  }
+  else{
+    res.send({msg:"No Records to display"});
+   // console.log("else ")
+  }
+    })
+})//end of weekly reports
       
 app.listen(process.env.PORT, () => {
 
