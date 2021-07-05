@@ -305,7 +305,7 @@ app.post("/updateprofile", (req, res) => {
         //  res.send(result);
               }
               else{
-                 // res.send({message:"Already Project Exited"});
+                 // res.send({message:"Already Project Existed"});
               }
   }
   );
@@ -317,7 +317,7 @@ app.post("/updateprofile", (req, res) => {
         (err,result)=>{
       
           if(result){
-            res.send({message:"Already Project Exited"});
+            res.send({message:"Already Project Existed"});
                 }
                 // else{
                 //     res.send({message:"Already Project Exited"});
@@ -395,7 +395,7 @@ if(taskList.length>0)
       //console.log("Data Successfully Updated")
           }
           else{
-              res.send({message:"Already Project Exited"});
+              res.send({message:"Already Project Existed"});
           }
 }
 );
@@ -412,7 +412,7 @@ if(taskList.length>0)
       //  console.log("Data Successfully Deleted")
             }
             else{
-                res.send({message:"Already Project Exited"});
+                res.send({message:"Already Project Existed"});
             }
   }
   );
@@ -577,7 +577,7 @@ taskList[i].Saturday=0;
      
           }
           else{
-              res.send({message:"Already Project Exited"});
+              res.send({message:"Already Project Existed"});
           }
    
   
@@ -658,7 +658,7 @@ app.post("/createtimesheet", (req, res) => {
    {
      j=1;
      console.log("updated",j)
-    res.send({message:"Already Project Exited"});
+    res.send({message:"Already Project Existed"});
     }
     else{
       console.log("inserted")
@@ -676,7 +676,7 @@ app.post("/createtimesheet", (req, res) => {
         db.query("select * from edittimesheet", function (err, result) {
           if(result){
             console.log("updates")
-            res.send({message:"Already Project Exited"});
+            res.send({message:"Already Project Existed"});
                 }
              
         
