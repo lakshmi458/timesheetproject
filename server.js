@@ -493,8 +493,20 @@ taskList[i].Saturday=0;
         
        if(!TimeSheetarr.includes(id+"^"+myDate+"^"+taskList[i].Client+"^"+taskList[i].Project))
        {
+<<<<<<< HEAD
          console.log("inserted")
      
+=======
+     console.log("update ts")
+         DeleteArr[i]=taskList[i].UserId+"^"+taskList[i].Date+"^"+taskList[i].Client+"^"+taskList[i].Project;
+      
+        db.query("UPDATE edittimesheet SET UserId=?,Date=?,Client=?,Project=?,Sunday=?,Cmt1=?,Monday=?,Cmt2=?,Tuesday=?,Cmt3=?,Wednesday=?,Cmt4=?,Thursday=?,Cmt5=?,Friday=?,Cmt6=?,Saturday=?,Cmt7=?,Submit=? WHERE UserId=? AND Date=? AND Client=? AND Project=?",
+      [id,myDate,taskList[i].Client,taskList[i].Project,taskList[i].Sunday,taskList[i].Cmt1,taskList[i].Monday,taskList[i].Cmt2,taskList[i].Tuesday,taskList[i].Cmt3,taskList[i].Wednesday,taskList[i].Cmt4,taskList[i].Thursday,taskList[i].Cmt5,taskList[i].Friday,taskList[i].Cmt6,taskList[i].Saturday,taskList[i].Cmt7,submit,id,myDate,taskList[i].Client,taskList[i].Project]);
+       }
+       else{
+         console.log(id, "id");
+         console.log("inserted1")
+>>>>>>> 1dedfd6a63473f0450ef7d255e4bbe304172d3ee
         DeleteArr[i]=id+"^"+myDate+"^"+taskList[i].Client+"^"+taskList[i].Project;
         db.query("insert into edittimesheet(UserId,Date,Client,Project,Sunday,Cmt1,Monday,Cmt2,Tuesday,Cmt3,Wednesday,Cmt4,Thursday,Cmt5,Friday,Cmt6,Saturday,Cmt7,Submit) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
         [id,myDate,taskList[i].Client,taskList[i].Project,taskList[i].Sunday,taskList[i].Cmt1,taskList[i].Monday,taskList[i].Cmt2,taskList[i].Tuesday,taskList[i].Cmt3,taskList[i].Wednesday,taskList[i].Cmt4,taskList[i].Thursday,taskList[i].Cmt5,taskList[i].Friday,taskList[i].Cmt6,taskList[i].Saturday,taskList[i].Cmt7,submit]);
